@@ -1,7 +1,7 @@
 export default interface Account{
     balance: number,
     clientId: string,
-    type: AccountType,
+    type: string,
     createdAt: Date,
     transactions: Array<Transaction>
     _id?: string

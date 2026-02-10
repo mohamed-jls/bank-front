@@ -33,7 +33,7 @@ const Login = () => {
                 <input type='email' placeholder='email' ref={emailRef} className="p-2 border border-black rounded-lg"/>
                 <input type='password' placeholder='password' ref={pwdRef} className="p-2 border border-black rounded-lg"/>
                 {err && <p className="p-2 border border-red-800 text-red-800 bg-red-200 rounded-lg">{err}</p>}
-                <input onClick={handleLogin} type='submit' value='Register'  className="p-2 border border-black rounded-lg hover:bg-black hover:text-white"/>
+                <input onClick={handleLogin} type='submit' value='Login'  className="p-2 border border-black rounded-lg hover:bg-black hover:text-white"/>
                 <p className="text-base p-1">don't have an account? <Link to='/register' className="text-blue-700 hover:underline">register now →</Link></p>
             </form>
         </div>

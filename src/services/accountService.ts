@@ -40,6 +40,19 @@ export async function updateAccount(id: string, account: Account): Promise<Accou
         throw 'error updating account'
     }
 }
+export async function makeTransaction(sender: string, receiver: string, amount: number): Promise<{message: string}>{
+    try{
+        const res = await axios.put<{message: string}>(`${apiUrl}/transaction`, {
+            sender,
+            receiver, 
+            amount
+        })
+        return res.data
+    }catch(err){
+        console.error(err);
+        throw 'error making transaction'
+    }   
+}
 export async function deleteAccount(id: string): Promise<{message: string}>{
     try{
         const res = await axios.delete<{message: string}>(`${apiUrl}/${id}`)

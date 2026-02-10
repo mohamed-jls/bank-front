@@ -3,10 +3,12 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import AccountDetails from "./pages/AccountDetails";
+import Profile from "./components/Profile";
 
 function App() {
     return (
         <div>
+            <Profile/>
             <Routes>
                 <Route index element={<Dashboard/>} />
                 <Route path='/register' element={<Register />} />
