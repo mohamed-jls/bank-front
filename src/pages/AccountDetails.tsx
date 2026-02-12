@@ -1,17 +1,19 @@
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import type Account from "../types/account";
 import { useEffect, useRef, useState } from "react";
-import { getAccountById, makeTransaction, updateAccount } from "../services/accountService";
+import { deleteAccount, getAccountById, makeTransaction, updateAccount } from "../services/accountService";
 import { useAuth } from "../utilities/AuthContext";
 
 const AccountDetails = () => {
     const { id } = useParams();
+    const nav = useNavigate()
     const { auth } = useAuth();
 
     const [account, setAccount] = useState<Account>();
     const [err, setErr] = useState<string>("");
     const [showTopup, setShowTopup] = useState(false);
     const [showTrans, setShowTrans] = useState(false);
+    const [currency, setCurrency] = useState('TND')
 
     const topupRef = useRef<HTMLInputElement>(null);
     const accRef = useRef<HTMLInputElement>(null);
@@ -52,13 +54,38 @@ const AccountDetails = () => {
         } 
     };
 
+    const handleDeleteAcc = async ()=>{
+        const cnfr = confirm('are you sure you want to permenetly delete this account')
+        if (!cnfr) return
+        try{
+            await deleteAccount(id || '')
+            nav('/')
+        }catch(err){
+            setErr(err as string)
+        }
+    }
+
     return (
         <div className='flex justify-center items-center h-screen relative'>
             <div className='flex h-150 w-xl border-2 border-gray-400 flex-col p-10 gap-4 text-2xl rounded-2xl'>
                 <p className='text-center font-bold'>{account._id}</p>
                 <p>client num: {account.clientId}</p>
                 <p>client : {auth.name}</p>
-                <p className='text-2xl text-green-700'>{account.balance} TND</p>
+                <p className='text-2xl text-green-700 flex gap-1'>
+                    <p>{ 
+                            currency == 'TND' 
+                            ? account.balance.toFixed(3)
+                            : currency == 'USD' 
+                            ? Number(account.balance * 0.35).toFixed(3)
+                            : Number(account.balance * 0.29).toFixed(3)
+                        }
+                    </p> 
+                    <select onChange={(e)=> setCurrency(e.target.value)}>
+                        <option value="TND">TND</option>
+                        <option value="USD">USD</option>
+                        <option value="EUR">EUR</option>
+                    </select>
+                </p>
                 <p className='p-2 rounded bg-amber-800 text-white'>{account.type}</p>
                 <p>transactions: </p>
                 {account.transactions.length == 0 ? (
@@ -70,14 +97,15 @@ const AccountDetails = () => {
                         ))}
                     </div>
                 )}
-                <div className='flex gap-3 '>
-                    <button onClick={() => setShowTrans(true)} className='p-2 rounded bg-gray-800 text-white text-lg'>
-                        make a transaction
+                <div className='flex gap-3 w-full'>
+                    <button onClick={() => setShowTrans(true)} className='p-2 rounded bg-gray-800 text-white text-lg w-1/2'>
+                        <i className="fa-solid fa-arrow-right-arrow-left"></i>make a transaction
                     </button>
-                    <button onClick={() => setShowTopup(true)} className='p-2 rounded bg-gray-800 text-white text-lg'>
-                        top up
+                    <button onClick={() => setShowTopup(true)} className='p-2 rounded bg-gray-800 text-white text-lg w-1/2'>
+                        <i className="fa-solid fa-arrow-up"></i>top up
                     </button>
                 </div>
+                <button onClick={handleDeleteAcc} className="bg-red-600 hover:bg-red-700 text-white p-2 rounded text-lg"><i className="fa-regular fa-trash-can"></i>delete account</button>
             </div>
             {showTopup && (
                 <div className='absolute flex flex-col gap-2 bg-white p-8 w-xs rounded top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 border'>
@@ -86,7 +114,7 @@ const AccountDetails = () => {
                     </button>
                     <input className='p-2 rounded border' type='number' min={0} ref={topupRef} />
                     <button onClick={handleTopUp} className='p-2 rounded bg-gray-800 text-white text-lg'>
-                        top up
+                        <i className="fa-solid fa-arrow-up"></i>top up
                     </button>
                 </div>
             )}
@@ -98,7 +126,7 @@ const AccountDetails = () => {
                     <input className='p-2 rounded border' type='text' placeholder='reciever num' ref={accRef} />
                     <input className='p-2 rounded border' type='number' placeholder='amount' min={0} ref={amountRef} />
                     <button onClick={handleTransfer} className='p-2 rounded bg-gray-800 text-white text-lg'>
-                        transfer
+                        <i className="fa-solid fa-arrow-right-arrow-left"></i>transfer
                     </button>
                 </div>
             )}

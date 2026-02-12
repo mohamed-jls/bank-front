@@ -3,6 +3,7 @@ import { useAuth } from "../utilities/AuthContext";
 import { useState } from "react";
 import type Account from "../types/account";
 import { createAccount } from "../services/accountService";
+import { deleteClient } from "../services/clientService";
 
 const Profile = () => {
     const { auth, logout } = useAuth();
@@ -41,6 +42,17 @@ const Profile = () => {
         }
     }
 
+    const handleDeleteClient = async ()=>{
+        const cnfr = confirm('are you sure you want to permenetly delete this client ?')
+        if(!cnfr) return
+        try{
+            await deleteClient(auth._id)
+            logout()
+        }catch(err){
+            console.error(err)
+        }
+    }
+
     return (
         <div className='absolute top-5 right-5 z-20'>
             {auth ? (
@@ -51,24 +63,26 @@ const Profile = () => {
                         src='https://img.freepik.com/vecteurs-premium/modele-conception-plate-icone-personne-illustration-vectorielle-signe-avatar-isole_109161-1680.jpg?semt=ais_hybrid&w=740&q=80'
                     />
                     {show && (
-                        <div className='flex flex-col border border-gray-300 rounded-2xl absolute top-15 right-0 bg-white'>
-                            <p className='hover:bg-gray-200 p-2 rounded-t-2xl'>{auth.name}</p>
+                        <div className='flex flex-col w-45 border border-gray-300 rounded-2xl absolute top-15 right-0 bg-white'>
+                            <Link to='/profile' className='hover:bg-gray-200 p-2 rounded-t-2xl'><i className="fa-regular fa-user"></i>{auth.name}</Link>
                             <div className='border border-gray-300'></div>
-                            <p className='hover:bg-gray-200 p-2'>{auth.email}</p>
+                            <Link to='/' className='hover:bg-gray-200 p-2'><i className="fa-regular fa-credit-card"></i>Accounts</Link>
                             <div className='border border-gray-300'></div>
                             <div className='hover:bg-gray-200 p-2 relative'>
-                                <span onClick={() => setShowType(!showType)}> ➕create new account</span>
+                                <span onClick={() => setShowType(!showType)}> <i className="fa-solid fa-folder-plus"></i>create new account</span>
                                 {showType && (
                                     <div className='absolute right-44 top-0 translate-y-[-25%] border border-gray-300 rounded-lg'>
-                                        <button onClick={handleCreateCreditAcc} className='hover:bg-gray-200 p-2 cursor-pointer rounded-t-lg w-20'>credit</button>
+                                        <button onClick={handleCreateCreditAcc} className='hover:bg-gray-200 p-2 cursor-pointer rounded-t-lg w-20'><i className="fa-regular fa-credit-card"></i>credit</button>
                                         <div className='border border-gray-300'></div>
-                                        <button onClick={handleCreateDebitAcc} className='hover:bg-gray-200 cursor-pointer p-2 rounded-b-lg w-20'>debit</button>
+                                        <button onClick={handleCreateDebitAcc} className='hover:bg-gray-200 cursor-pointer p-2 rounded-b-lg w-20'><i className="fa-solid fa-credit-card"></i>debit</button>
                                     </div>
                                 )}
                             </div>
                             <div className='border border-gray-300'></div>
-                            <button className='hover:bg-gray-200 cursor-pointer p-2 rounded-b-2xl' onClick={logout}>
-                                logout
+                            <button onClick={logout}  className='hover:bg-gray-200 p-2 text-start'><i className="fa-solid fa-arrow-right-from-bracket"></i>logout</button>
+                            <div className='border border-gray-300'></div>
+                            <button onClick={handleDeleteClient} className='hover:bg-red-200 cursor-pointer p-2 rounded-b-2xl text-start'>
+                                <i className="fa-solid fa-user-xmark"></i>delete client
                             </button>
                         </div>
                     )}
